@@ -62,42 +62,36 @@ def update_client(connection, id=None, first_name=None, last_name=None, email=No
     print('Данные обновленны')
 
 
+def delete_phone(connection, phone, id=None, first_name=None, last_name=None):
+    """Функция, позволяющая удалить телефон для существующего клиента"""
+    id_client = service.checking_id(connection, id, first_name, last_name)
+    with connection.cursor() as cursor:
+        cursor.execute("""DELETE FROM client_phone WHERE id_client = %s and phone = %s""", (id_client, phone))
+    print('Номер удален ')
 
-# def delete_phone(connection, phone, id=None, first_name=None, last_name=None):
-#     if id != None:
-#         id_client = id
-#     else:
-#         id_client = load_id_client(connection, first_name, last_name)
-#     with connection.cursor() as cursor:
-#         cursor.execute("""DELETE FROM client_phone WHERE id_client = %s and phone = %s""", (id_client, phone))
-#     print('Номер удален ')
-#
-#
-# def delete_cleint(connection, id=None, first_name=None, last_name=None):
-#     if id != None:
-#         id_client = id
-#     else:
-#         id_client = load_id_client(connection, first_name, last_name)
-#     with connection.cursor() as cursor:
-#         cursor.execute(f"""DELETE FROM client_phone WHERE id_client = %s;
-#                             DELETE FROM client WHERE id = %s;""", (id_client, id_client))
-#     print('Клиент удален ')
-#
-# def search_client(connection, first_name=None, last_name=None, email=None, phone=None):
-#     with connection.cursor() as cursor:
-#         if first_name!=None or last_name!=None or email!=None:
-#             cursor.execute(f"""SELECT * FROM client
-#                                 WHERE first_name = %s or last_name = %s or email = %s""",
-#                            (first_name,last_name,email))
-#             result = cursor.fetchall()
-#         else:
-#             id_client = cursor.execute(f"""SELECT id_client FROM client_phone
-#                                 WHERE phone = %s""", (phone,))
-#             print(id_client)
-#             cursor.execute(f"""SELECT * FROM client WHERE id = %s""",(id_client,))
-#             result = cursor.fetchall()
-#
-#         return result
+
+def delete_cleint(connection, id=None, first_name=None, last_name=None):
+    """Функция, позволяющая удалить существующего клиента"""
+    id_client = service.checking_id(connection, id, first_name, last_name)
+    with connection.cursor() as cursor:
+        cursor.execute(f"""DELETE FROM client_phone WHERE id_client = %s;
+                            DELETE FROM client WHERE id = %s;""", (id_client, id_client))
+    print('Клиент удален ')
+
+def search_client(connection, first_name=None, last_name=None, email=None, phone=None):
+    with connection.cursor() as cursor:
+        if (first_name != None and last_name != None) or email != None:
+            cursor.execute(f"""SELECT id, first_name, last_name, email FROM client
+                                WHERE first_name = %s or last_name = %s or email = %s""",
+                           (first_name, last_name, email))
+            result = cursor.fetchall()
+        else:
+            cursor.execute(f"""SELECT id_client FROM client_phone
+                                WHERE phone = %s""", (phone,))
+            id_client = cursor.fetchall()
+            cursor.execute(f"""SELECT * FROM client WHERE id = %s""", (id_client[0][0],))
+            result = cursor.fetchall()
+        print(result)
 
 
 
@@ -107,10 +101,11 @@ with psycopg2.connect(database = 'netology_db', user = 'postgres', password = 'p
     # append_client(conn, 'Serg', 'Petr', 'vlad@mail.ru', '89184955646')
 
     # append_phone(conn, 'Vlad', 'Ivanov', '89184957596')
-    update_client(conn, id='4', first_name='Mihans', email='mihas@mail.ru', phone='89156975647')
+    # update_client(conn, id='4', first_name='Mihans', email='mihas@mail.ru', phone='89156975647')
     # delete_phone(conn, id='1', phone='89184957596')
     # delete_cleint(conn, id=1)
     # print(search_client(conn, phone='89184957826'))
     # upgrade(first_name='Vladislav',email='89184957596')
+    search_client(conn, first_name='Mihail', last_name='mihin')
 conn.close()
 
