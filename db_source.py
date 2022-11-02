@@ -37,6 +37,7 @@ def append_client(connection, first_name, last_name, email, phone=None):
                             VALUES (%s, %s, %s)
                             """, (first_name, last_name, email))
         append_phone(connection, first_name, last_name, phone)
+
         print('Клиент добавлен')
 
 
@@ -78,26 +79,34 @@ def delete_cleint(connection, id=None, first_name=None, last_name=None):
                             DELETE FROM client WHERE id = %s;""", (id_client, id_client))
     print('Клиент удален ')
 
+
 def search_client(connection, first_name=None, last_name=None, email=None, phone=None):
     with connection.cursor() as cursor:
-        if (first_name != None and last_name != None) or email != None:
-            cursor.execute(f"""SELECT id, first_name, last_name, email FROM client
-                                WHERE first_name = %s or last_name = %s or email = %s""",
-                           (first_name, last_name, email))
-            result = cursor.fetchall()
-        else:
-            cursor.execute(f"""SELECT id_client FROM client_phone
-                                WHERE phone = %s""", (phone,))
+        if phone != None:
+            cursor.execute(f"""SELECT id_client FROM client_phone WHERE phone = %s""", (phone,))
             id_client = cursor.fetchall()
-            cursor.execute(f"""SELECT * FROM client WHERE id = %s""", (id_client[0][0],))
+            if len(id_client) != 0:
+                cursor.execute(f"""SELECT id, first_name, last_name, email 
+                                    FROM client
+                                    WHERE id = %s or first_name = %s or last_name = %s or email = %s""",
+                               (id_client[0][0], first_name, last_name, email))
+                result = cursor.fetchall()
+            else:
+                cursor.execute(f"""SELECT id, first_name, last_name, email 
+                                    FROM client
+                                    WHERE first_name = %s or last_name = %s or email = %s""", (first_name, last_name, email))
+                result = cursor.fetchall()
+        else:
+            cursor.execute(f"""SELECT id, first_name, last_name, email 
+                                FROM client
+                                WHERE first_name = %s or last_name = %s or email = %s""", (first_name, last_name, email))
             result = cursor.fetchall()
         print(result)
 
 
-
 with psycopg2.connect(database = 'netology_db', user = 'postgres', password = 'postgres') as conn:
     # create_database(conn)
-    # append_client(conn, 'Vlad', 'Ivanov', 'vlad@mail.ru', '89184957826')
+    append_client(conn, 'Vlad', 'Ivanov', 'vlad@mail.ru', '89184957826')
     # append_client(conn, 'Serg', 'Petr', 'vlad@mail.ru', '89184955646')
 
     # append_phone(conn, 'Vlad', 'Ivanov', '89184957596')
@@ -106,6 +115,6 @@ with psycopg2.connect(database = 'netology_db', user = 'postgres', password = 'p
     # delete_cleint(conn, id=1)
     # print(search_client(conn, phone='89184957826'))
     # upgrade(first_name='Vladislav',email='89184957596')
-    search_client(conn, first_name='Mihail', last_name='mihin')
+    # search_client(conn, first_name='Mihans')
 conn.close()
 
