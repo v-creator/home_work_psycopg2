@@ -33,5 +33,5 @@ class DBservice:
         if id != None:
             id_client = id
         else:
-            id_client = self.load_id_client(self, connection, first_name, last_name)
+            id_client = self.load_id_client(connection, first_name, last_name)
         return id_client

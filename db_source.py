@@ -53,7 +53,7 @@ def update_client(connection, id=None, first_name=None, last_name=None, email=No
             cursor.execute(f"""SELECT phone FROM client_phone WHERE id_client = %s""", (id_client,))
             list_number = cursor.fetchall()
             if len(list_number) > 0:
-                update_number = input(f'{list_number}\nКакой номер хотите заменить?:')
+                update_number = input(f'{list_number}\nКакой номер хотите заменить?: ')
                 cursor.execute(f"""UPDATE client_phone SET phone = %s
                                             where id_client = %s and phone = %s""", (phone,id_client, update_number))
             else:
@@ -105,16 +105,20 @@ def search_client(connection, first_name=None, last_name=None, email=None, phone
 
 
 with psycopg2.connect(database = 'netology_db', user = 'postgres', password = 'postgres') as conn:
-    # create_database(conn)
-    append_client(conn, 'Vlad', 'Ivanov', 'vlad@mail.ru', '89184957826')
-    # append_client(conn, 'Serg', 'Petr', 'vlad@mail.ru', '89184955646')
+    create_database(conn)
+    # append_client(conn, 'Влад', 'Иванов', 'vlad@mail.ru', '89184957826')
+    # append_client(conn, 'Сергей', 'Петров', 'petrov@mail.ru', '89567325646')
+    # append_client(conn, 'Александр', 'Ли', 'ali@mail.ru', '89561329635')
+    # append_phone(conn, 'Влад', 'Иванов', '89881357438')
 
-    # append_phone(conn, 'Vlad', 'Ivanov', '89184957596')
-    # update_client(conn, id='4', first_name='Mihans', email='mihas@mail.ru', phone='89156975647')
-    # delete_phone(conn, id='1', phone='89184957596')
-    # delete_cleint(conn, id=1)
-    # print(search_client(conn, phone='89184957826'))
-    # upgrade(first_name='Vladislav',email='89184957596')
-    # search_client(conn, first_name='Mihans')
+    # update_client(conn, id=1, first_name='Влад', last_name='Иванов')
+    # update_client(conn, first_name='Влад', last_name='Иванов', email='vlad_ivanov@mail.ru')
+    # update_client(conn, first_name='Влад', last_name='Иванов', email='vlad_i@mail.ru', phone='8918495782')
+    # delete_phone(conn, id=1, phone='89156975647')
+    # delete_phone(conn, first_name='Влад', last_name='Иванов', phone='8918495782')
+    # delete_cleint(conn, first_name='Сергей', last_name='Петров')
+
+    # search_client(conn, first_name='Влад', last_name='Ли')
+    # search_client(conn, email='vlad@mail.ru', phone='89561329635')
 conn.close()
 
